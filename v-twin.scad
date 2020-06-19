@@ -227,16 +227,13 @@ function piston_height(angle) =
 module combined(explode = 0) {
 	a = (1-$t) * 360;
 
-	// engine block
 	translate([0, 0, -explode])
 		block();
 
-	// crankshaft spacer
 	translate([0, 0, explode])
 		rotate([0, 0, a])
 			spacer();
 
-	// crankshaft
 	translate([0, 0, 2+explode*2])
 		rotate([0, 0, a])
 			crank();
@@ -271,12 +268,20 @@ module exploded(explode) {
 
 module seperate() {
 	translate([0,0,4]) rotate(180, [0,1,0]) block();     // engine block
-	translate([0, CRANK+PISTON*2, 0]) spacer();          // crankshaft spacer
 	translate([0, CRANK/2, 0]) crank();                  // crankshaft
-	translate([CRANK+PISTON*2, -PISTON/2, 0]) piston();  // right piston
-	translate([-CRANK-PISTON*2, -PISTON/2, 0]) piston(); // left piston
-	translate([CRANK+PISTON*2, -ROD*2, 0]) rod();        // right connecting rod
-	translate([-CRANK-PISTON*2, -ROD*2, 0]) rod();       // left connecting rod
+	translate([0, CRANK+PISTON*2, 0]) spacer();          // crankshaft spacer
+
+	y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
+	x = PISTON * 2;
+	offset = (CYLINDERS-1) * PISTON;
+
+	for (i = [0:CYLINDERS-1]) {
+		translate([-offset + x*i, -y-PISTON, 0]) {
+			piston();
+			translate([0, -PISTON-ROD, 0])
+				rod();
+		}
+	}
 }
 
 /*
