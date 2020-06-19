@@ -22,18 +22,18 @@ PISTON  = MOTOR_SIZE / 3;        // Piston size
 SLEEVE  = CRANK+ROD+PISTON/2+WALL+1; // Cylinder sleeve length from center
 
 module pin() {
-	union() {
-		// Pin body
-		cylinder(r = PIN, h = 4);
+	height = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
-		// Upper cone
-		translate([0, 0, 4.5])
-			cylinder(r1 = PIN + 0.5, r2 = PIN, h = 0.5);
+	// Pin body
+	cylinder(r = PIN, h = height);
 
-		// Lower cone
-		translate([0, 0, 4])
-			cylinder(r1 = PIN, r2 = PIN + 0.5, h = 0.5);
-	}
+	// Upper cone
+	translate([0, 0, height+0.5])
+		cylinder(r1 = PIN + 0.5, r2 = PIN, h = 0.5);
+
+	// Lower cone
+	translate([0, 0, height])
+		cylinder(r1 = PIN, r2 = PIN + 0.5, h = 0.5);
 }
 
 module crank() {
@@ -75,7 +75,7 @@ module rod() {
 			union() {
 				// Half height ring
 				rotate([0, 0, 180])
-					ring(1);
+					ring(CYLINDERS == 1 ? 2 : 1);
 
 				// Middle bar
 				translate([-1, PIN+TOLERANCE+1, 0])
@@ -83,7 +83,7 @@ module rod() {
 
 				// Lower bar filler
 				translate([-1, PIN+TOLHALF, 0])
-					cube([2, 2, 1]);
+					cube([2, 2, CYLINDERS == 1 ? 2 : 1]);
 			}
 		}
 
@@ -269,7 +269,7 @@ module exploded(explode) {
 module seperate() {
 	translate([0,0,4]) rotate(180, [0,1,0]) block();     // engine block
 	translate([0, CRANK/2, 0]) crank();                  // crankshaft
-	translate([0, CRANK+PISTON*2, 0]) spacer();          // crankshaft spacer
+	translate([CYLINDERS%2==0 ? 0 : PISTON*2, CRANK+PISTON*2, 0]) spacer();
 
 	y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
 	x = PISTON * 2;
