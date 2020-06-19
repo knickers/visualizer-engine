@@ -8,8 +8,8 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
 
-$fn     = 24 * 1;                // Curve resolution
-PIN     = 2 * 1;                 // Pin radius
+$fn     = 24 + 0;                // Curve resolution
+PIN     = 2 + 0;                 // Pin radius
 MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
 TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
 SQRT2   = sqrt(2);               // Square root of 2
