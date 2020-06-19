@@ -225,7 +225,8 @@ function piston_height(angle) =
 	CRANK * cos(angle) + sqrt(ROD*ROD - CRANK*CRANK * sin(angle)*sin(angle));
 
 module combined(explode = 0) {
-	a = (1-$t) * 360;
+	a = $t * 360 + 90;
+	offset = (CYLINDERS-1) * 45;
 
 	translate([0, 0, -explode])
 		block();
@@ -238,25 +239,16 @@ module combined(explode = 0) {
 		rotate([0, 0, a])
 			crank();
 
-	// right piston
-	rotate([0, 0, -45])
-		translate([0, piston_height(abs(a-135)), 2+explode*4])
-			piston();
+	for (i = [0:CYLINDERS-1]) {
+		A = offset-i*90;
+		rotate([0, 0, A])
+			translate([0, piston_height(abs(A+180-a)), 2+explode*4])
+				piston();
 
-	// left piston
-	rotate([0, 0, 45])
-		translate([0, piston_height(abs(a+135)), 2+explode*4])
-			piston();
-
-	// right connecting rod
-	translate([sin(a)*CRANK, -cos(a)*CRANK, 4+explode*6+TOLHALF])
-		rotate([0, 0, asin(sin(a+45)*CRANK/ROD)-45])
-			rod();
-
-	// left connecting rod
-	translate([sin(a)*CRANK, -cos(a)*CRANK, 6+explode*6+TOLERANCE*2/3])
-		rotate([0, 180, asin(sin(a-45)*CRANK/ROD)+45])
-			rod();
+		translate([sin(a)*CRANK, -cos(a)*CRANK, 4+explode*6+TOLHALF])
+			rotate([0, 0, asin(sin(a+A)*CRANK/ROD)-A])
+				rod();
+	}
 }
 
 module exploded(explode) {
