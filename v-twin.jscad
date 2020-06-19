@@ -62,25 +62,22 @@ function r2d(radians) { return radians * 180 / Math.PI; }
 function d2r(degrees) { return degrees * Math.PI / 180; }
 
 function pin(args) {
-	return union(
-		cylinder({r: args.pin, h: 5, fn: args.fn}),
-		translate([0, 0, 5], // upper cone
-			cylinder({
-				r1: args.pin + 0.5,
-				r2: args.pin,
-				h: 0.5,
-				fn: args.fn
-			})
-		),
-		translate([0, 0, 4.5], // lower cone
-			cylinder({
-				r1: args.pin,
-				r2: args.pin + 0.5,
-				h: 0.5,
-				fn: args.fn
-			})
-		)
-	);
+	var H = 5;
+	return translate([0, 0, H], union(
+		cylinder({r: args.pin, h: -H, fn: args.fn}), // pin body
+		cylinder({ // upper cone
+			r1: args.pin + 0.5,
+			r2: args.pin,
+			h: 0.5,
+			fn: args.fn
+		}),
+		cylinder({ // lower cone
+			r1: args.pin + 0.5,
+			r2: args.pin,
+			h: -0.5,
+			fn: args.fn
+		})
+	));
 }
 
 function crank(args) {
@@ -277,7 +274,6 @@ function combined(args) {
 		),
 		translate([0, 0, -l],
 			block(args) // engine block
-			//cylinder({r: 4, h: 2, fn: args.fn}) // magnet
 		),
 		translate([0, 0, l],
 			cylinder({r: 4, h: 2, fn: args.fn}) // crankshaft spacer
