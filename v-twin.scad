@@ -8,18 +8,55 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
 // Number of cylinders
-CYLINDERS = 2; // [1:4]
+CYLINDERS = 4; // [1:4]
 
 $fn     = 24 + 0;                // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
-MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
 WALL    = 2 + 0;                 // Wall thickness
-TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
+MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
 SQRT2   = sqrt(2);               // Square root of 2
+TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
 CRANK   = MOTOR_SIZE / 6;        // Crankshaft Length
 ROD     = MOTOR_SIZE / 2;        // Connecting Rod Length
 PISTON  = MOTOR_SIZE / 3;        // Piston size
 SLEEVE  = CRANK+ROD+PISTON/2+WALL+1; // Cylinder sleeve length from center
+
+
+
+
+/********************************************************
+ *  Arrange all the necessary parts on the build plate  *
+ ********************************************************
+
+translate([0,0,4])
+	rotate(180, [0,1,0])
+		block();
+
+translate([0, CRANK/2, 0])
+	crank();
+
+translate([CYLINDERS%2==0 ? 0 : PISTON*2, CRANK+PISTON*2, 0])
+	spacer();
+
+y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
+x = PISTON * 2;
+offset = (CYLINDERS-1) * PISTON;
+
+for (i = [0:CYLINDERS-1]) {
+	translate([-offset + x*i, -y-PISTON, 0]) {
+		piston();
+		translate([0, -PISTON-ROD, 0])
+			rod();
+	}
+}
+ */
+
+
+
+/**************************************************
+ *  Modules for building each part of the engine  *
+ **************************************************
+ */
 
 module pin() {
 	height = CYLINDERS == 1 ? 4 : CYLINDERS+2;
@@ -219,72 +256,3 @@ module block() {
 		mounts();
 	}
 }
-
-// https://en.wikipedia.org/wiki/Piston_motion_equations#Crankshaft_geometry
-function piston_height(angle) =
-	CRANK * cos(angle) + sqrt(ROD*ROD - CRANK*CRANK * sin(angle)*sin(angle));
-
-module combined(explode = 0) {
-	a = $t * 360 + 90;
-	offset = (CYLINDERS-1) * 45;
-
-	translate([0, 0, -explode])
-		block();
-
-	translate([0, 0, explode])
-		rotate([0, 0, a])
-			spacer();
-
-	translate([0, 0, 2+explode*2])
-		rotate([0, 0, a])
-			crank();
-
-	for (i = [0:CYLINDERS-1]) {
-		A = offset-i*90;
-		rotate([0, 0, A])
-			translate([0, piston_height(abs(A+180-a)), 2+explode*4])
-				piston();
-
-		translate([sin(a)*CRANK, -cos(a)*CRANK, 4+explode*6+TOLHALF])
-			rotate([0, 0, asin(sin(a+A)*CRANK/ROD)-A])
-				rod();
-	}
-}
-
-module exploded(explode) {
-	translate([0, 0, MOTOR_SIZE])
-		rotate([90, 0, 0])
-			translate([0, 0, -explode*3])
-				combined(explode);
-}
-
-module seperate() {
-	translate([0,0,4]) rotate(180, [0,1,0]) block();     // engine block
-	translate([0, CRANK/2, 0]) crank();                  // crankshaft
-	translate([CYLINDERS%2==0 ? 0 : PISTON*2, CRANK+PISTON*2, 0]) spacer();
-
-	y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
-	x = PISTON * 2;
-	offset = (CYLINDERS-1) * PISTON;
-
-	for (i = [0:CYLINDERS-1]) {
-		translate([-offset + x*i, -y-PISTON, 0]) {
-			piston();
-			translate([0, -PISTON-ROD, 0])
-				rod();
-		}
-	}
-}
-
-/*
-crank();
-rod();
-piston();
-mount();
-sleeve();
-block();
-combined();
-exploded(5);
-seperate();
-*/
-seperate();
