@@ -10,6 +10,8 @@ TOLERANCE = 0.3; // [0.1:0.05:0.5]
 // Number of cylinders
 CYLINDERS = 4; // [1:4]
 
+PROPELLER = 1;
+
 $fn     = 24 + 0;                // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
 WALL    = 2 + 0;                 // Wall thickness
@@ -20,6 +22,7 @@ CRANK   = MOTOR_SIZE / 6;        // Crankshaft Length
 ROD     = MOTOR_SIZE / 2;        // Connecting Rod Length
 PISTON  = MOTOR_SIZE / 3;        // Piston size
 SLEEVE  = CRANK+ROD+PISTON/2+WALL+1; // Cylinder sleeve length from center
+PIN_HEIGHT = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
 
 
@@ -51,6 +54,11 @@ for (i = [0:CYLINDERS-1]) {
 	}
 }
 
+if (PROPELLER) {
+	translate([0, MOTOR_SIZE + PISTON, 0])
+		propeller();
+}
+
 
 
 /**************************************************
@@ -59,17 +67,15 @@ for (i = [0:CYLINDERS-1]) {
  */
 
 module pin() {
-	height = CYLINDERS == 1 ? 4 : CYLINDERS+2;
-
 	// Pin body
-	cylinder(r = PIN, h = height);
+	cylinder(r = PIN, h = PIN_HEIGHT);
 
 	// Upper cone
-	translate([0, 0, height+0.5])
+	translate([0, 0, PIN_HEIGHT+0.5])
 		cylinder(r1 = PIN + 0.5, r2 = PIN, h = 0.5);
 
 	// Lower cone
-	translate([0, 0, height])
+	translate([0, 0, PIN_HEIGHT])
 		cylinder(r1 = PIN, r2 = PIN + 0.5, h = 0.5);
 }
 
@@ -88,6 +94,12 @@ module crank() {
 			// Upper circle
 			translate([0, CRANK, 0])
 				cylinder(r = 4, h = 2);
+
+			if (PROPELLER) {
+				p = PIN * 2 / SQRT2; // pin size
+				translate([0, 0, PIN_HEIGHT+3])
+					cube([p, p, 4], true);
+			}
 		}
 }
 
@@ -259,5 +271,30 @@ module block() {
 		}
 
 		mounts();
+	}
+}
+
+module propeller() {
+	l = MOTOR_SIZE + 4; // length of propeller wing
+	p = PIN * 2 / SQRT2; // pin size
+
+	difference() {
+		union() {
+			cylinder(d = 8, h = 2);
+
+			translate([-l/2, 0, 0])
+				scale([1, 0.3, 1])
+					cylinder(d = l, h = 2, $fn = $fn*2); // left wing
+
+			translate([l/2, 0, 0])
+				scale([1, 0.3, 1])
+					cylinder(d = l, h = 2, $fn = $fn*2); // right wing
+
+			translate([CRANK, 0, 0])
+				cylinder(r = PIN+0.3, h = 4); // pin slot extension
+		}
+
+		translate([CRANK, 0, 2])
+			cube([p+0.1, p+0.1, 6], true);
 	}
 }

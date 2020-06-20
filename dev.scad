@@ -45,6 +45,12 @@ module combined(explode = 0) {
 				}
 			}
 	}
+
+	if (PROPELLER) {
+		translate([0, 0, 7+PIN_HEIGHT+TOLHALF])
+			rotate([180, 0, a-90])
+				propeller();
+	}
 }
 
 module exploded(explode) {
@@ -61,8 +67,8 @@ piston();
 mount();
 sleeve();
 block();
+propeller();
 combined();
 exploded(5);
 */
-rotate([90, 0, 0])
 combined();
