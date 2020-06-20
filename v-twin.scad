@@ -27,6 +27,7 @@ SLEEVE  = CRANK+ROD+PISTON/2+WALL+1; // Cylinder sleeve length from center
 /********************************************************
  *  Arrange all the necessary parts on the build plate  *
  ********************************************************
+ */
 
 translate([0,0,4])
 	rotate(180, [0,1,0])
@@ -49,7 +50,6 @@ for (i = [0:CYLINDERS-1]) {
 			rod();
 	}
 }
- */
 
 
 
