@@ -133,13 +133,18 @@ module rod() {
 module piston_body() {
 	w = PISTON + 2;
 	a = (w-TOLERANCE*2) / SQRT2;
+	s = PISTON - TOLERANCE*2;
 
 	translate([0, 0, 1])
-		intersection() {
+		difference() {
 			rotate([0, 45, 0])
 				cube([a, PISTON, a], true); // main piston body
 
-			cube([w, PISTON, 2], true); // flatten top and bottom
+			translate([0, 0, PISTON/2+1])
+				cube([s, PISTON+1, PISTON], true); // flatten top
+
+			translate([0, 0, -PISTON/2-1])
+				cube([s, PISTON+1, PISTON], true); // flatten bottom
 		}
 }
 
