@@ -6,12 +6,15 @@ function piston_height(angle) =
 
 module combined(explode = 0) {
 	a = $t * 360 + 90;           // angle of the crankshaft
-	b = 4 + explode*6 + TOLHALF; // base height of connecting rods
-	offset = (CYLINDERS-1) * 45;
+	z = 4 + explode*6 + TOLHALF; // base z height of connecting rods
+	angle = 90;
+	nudge = 45;
+	offset = (CYLINDERS-1) * (angle/2) - nudge;
 
 	color("LightGrey")
 	translate([0, 0, -explode])
-		block();
+		rotate([0, 0, offset])
+			block();
 
 	color("SlateGrey")
 	translate([0, 0, explode])
@@ -24,16 +27,16 @@ module combined(explode = 0) {
 			crank();
 
 	for (i = [0:CYLINDERS-1]) {
-		A = offset-i*90; // angle of this piston sleeve iteration
-		O = i % 2;       // is this an odd iteration?
+		A = -i*angle + nudge; // angle of this piston sleeve iteration
+		O = i % 2;    // is this an odd iteration?
 
 		color("SlateGrey")
-		rotate([0, 0, A])
-			translate([0, piston_height(abs(A+180-a)), 2+explode*4])
+		rotate([0, 0, -A])
+			translate([0, piston_height(abs(180-A-a)), 2+explode*4])
 				piston();
 
 		color("LightGrey")
-		translate([sin(a)*CRANK, -cos(a)*CRANK, i*(1+TOLHALF/2) + b])
+		translate([sin(a)*CRANK, -cos(a)*CRANK, i*(1+TOLHALF/2) + z])
 			rotate([0, 0, asin(sin(a+A)*CRANK/ROD)-A]) {
 				if (O || (CYLINDERS==3 && i==2)) {
 					rotate([0, 180, 0])
@@ -71,4 +74,5 @@ propeller();
 combined();
 exploded(5);
 */
+rotate([90, 0, 0])
 combined();
