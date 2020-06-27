@@ -18,10 +18,12 @@ WALL    = 2 + 0;                 // Wall thickness
 MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
 SQRT2   = sqrt(2);               // Square root of 2
 TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
-CRANK   = MOTOR_SIZE / 6;        // Crankshaft Length
-ROD     = MOTOR_SIZE / 2;        // Connecting Rod Length
+CRANK   = MOTOR_SIZE / 6;        // Crankshaft length
+ROD     = MOTOR_SIZE / 2;        // Connecting rod length
 PISTON  = MOTOR_SIZE / 3.1;      // Piston size
-SLEEVE  = CRANK+ROD+PISTON/2+WALL+1; // Cylinder sleeve length from center
+SLEEVE  = CRANK+ROD+PISTON/2+WALL+1;             // Cylinder length from center
+CYLINDERS = CONFIGURATION == 20 ? 2 : CONFIGURATION; // Number of cylinders
+CYLINDER_ANGLE = CONFIGURATION == 20 ? 180 : 90;     // Angle between cylinders
 PIN_HEIGHT = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
 
