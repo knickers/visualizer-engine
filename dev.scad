@@ -7,9 +7,8 @@ function piston_height(angle) =
 module combined(explode = 0) {
 	a = $t * 360 + 90;           // angle of the crankshaft
 	z = 4 + explode*6 + TOLHALF; // base z height of connecting rods
-	angle = 90;
 	nudge = 45;
-	offset = (CYLINDERS-1) * (angle/2) - nudge;
+	offset = (CYLINDERS-1) * (CYLINDER_ANGLE/2) - nudge;
 
 	color("LightGrey")
 	translate([0, 0, -explode])
@@ -27,8 +26,8 @@ module combined(explode = 0) {
 			crank();
 
 	for (i = [0:CYLINDERS-1]) {
-		A = -i*angle + nudge; // angle of this piston sleeve iteration
-		O = i % 2;    // is this an odd iteration?
+		A = -i*CYLINDER_ANGLE + nudge; // angle of this piston sleeve iteration
+		O = i % 2;                     // is this an odd iteration?
 
 		color("SlateGrey")
 		rotate([0, 0, -A])

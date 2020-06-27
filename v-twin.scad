@@ -8,7 +8,7 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
 // Number of cylinders
-CYLINDERS = 4; // [1:4]
+CONFIGURATION = 2; // [1:'1 Cylinder', 2:'2 Cylinders V', 20:'2 Cylinders Flat', 3:'3 Cylinders', 4:'4 Cylinders']
 
 PROPELLER = 1;
 
@@ -204,10 +204,10 @@ module mount() {
 
 module mounts() {
 	s = MOTOR_SIZE / 2 * SQRT2;
-	offset = (CYLINDERS-1) * 45;
+	offset = (CYLINDERS-1) * CYLINDER_ANGLE/2;
 
 	for (i = [0:CYLINDERS-1])
-		rotate([0, 0, offset-i*90])
+		rotate([0, 0, offset-i*CYLINDER_ANGLE])
 			translate([0, s, 0])
 				mount();
 }
@@ -249,12 +249,12 @@ module sleeve() {
 }
 
 module block() {
-	offset = (CYLINDERS-1) * 45;
+	offset = (CYLINDERS-1) * CYLINDER_ANGLE/2;
 	union() {
 		difference() {
 			union() {
 				for (i = [0:CYLINDERS-1])
-					rotate([0, 0, offset-i*90])
+					rotate([0, 0, offset-i*CYLINDER_ANGLE])
 						sleeve_outline();
 
 				// block housing outer wall
@@ -262,7 +262,7 @@ module block() {
 			}
 
 			for (i = [0:CYLINDERS-1])
-				rotate([0, 0, offset-i*90])
+				rotate([0, 0, offset-i*CYLINDER_ANGLE])
 					sleeve_cutout();
 
 			// block housing inner wall
