@@ -4,7 +4,7 @@ Kinetic extruder visualizer for a more interactive look, inspired by extruder vi
 
 The engine block is held in place by circular tabs that press fit into the screw holes of standard NEMA 17 stepper motors. The fit should be tight so the assembly holds itself in place securely. If the mounting tabs don't fit in your motor, edit the tab size in Thingiverse Customizer.
 
-The crankshaft requires an **8 mm** diameter by **3 mm** tall neodymium magnet to hold itself to the stepper motor shaft.
+The crankshaft requires a neodymium magnet to hold itself to the stepper motor shaft, **8 mm** diameter by **3 mm** tall.
 
 *Edit: June 26th 2020*
 Added different cylinder configurations. Now choose these different numbers and angles of cylinders:
@@ -12,8 +12,8 @@ Added different cylinder configurations. Now choose these different numbers and 
 * Single Cylinder
 * V-Twin
 * Flat Twin
-* W Three Cylinders
-* Radial Four Cylinders
+* W Three Cylinder
+* Radial Four Cylinder
 
 *Edit: May 8th 2020*
 Added Thingiverse Customizer ability! Easily customize the engine to fit your motor right here in Thingiverse.
