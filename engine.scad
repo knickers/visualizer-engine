@@ -8,7 +8,7 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
 // Number of cylinders
-CONFIGURATION = 2; // [1:'1 Cylinder', 2:'2 Cylinders V', 20:'2 Cylinders Flat', 3:'3 Cylinders', 4:'4 Cylinders']
+CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders V, 20:2 Cylinders Flat, 3:3 Cylinders, 4:4 Cylinders]
 
 PROPELLER = 1;
 
