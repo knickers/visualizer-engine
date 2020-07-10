@@ -1,4 +1,4 @@
-# Reciprocating Kinetic Extruder Visualizer
+# Kinetic Extruder Visualizer Pistons
 
 Kinetic visualizer pistons for a more discernibly dynamic extruder, inspired by extruder visualizers from other designers. Reciprocating Engine built to attach to your direct dive extruder motor. Can also attach to any motor which has screw holes in the corners.
 
@@ -12,8 +12,8 @@ Added different cylinder configurations. Now choose these different numbers and 
 * Single Cylinder
 * V-Twin
 * Flat Twin
-* W Three Cylinder
-* Radial Four Cylinder
+* W Three
+* Radial Four
 
 *Edit: May 8th 2020*
 Added Thingiverse Customizer ability! Easily customize the engine to fit your motor right here in Thingiverse.
