@@ -1,5 +1,7 @@
 # Reciprocating Kinetic Extruder Visualizer Engine
 
+https://www.thingiverse.com/thing:4121683
+
 Kinetic visualizer pistons for a more discernibly dynamic extruder, inspired by extruder visualizers from other designers. Reciprocating Engine built to attach to your direct dive extruder motor. Can also attach to any motor which has screw holes in the corners.
 
 The engine block is held in place by circular tabs that press fit into the screw holes of standard NEMA 17 stepper motors. The fit should be tight so the assembly holds itself in place securely. If the mounting tabs don't fit in your motor, edit the tab size in Thingiverse Customizer.
