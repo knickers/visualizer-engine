@@ -1,5 +1,5 @@
 // Number and angle of cylinders
-CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders, V, 20:2 Cylinders, Flat, 3:3 Cylinders, 4:4 Cylinders]
+CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders (V), 20:2 Cylinders (Flat), 3:3 Cylinders, 4:4 Cylinders]
 
 // Distance between the stepper motor screws in millimeters
 MOTOR_SIZE = 31; // [20:0.1:50]
@@ -12,7 +12,7 @@ TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
 /* [Propeller] */
 
-ENABLE_PROPELLER = 1; // [0:No, 1:Yes]
+ENABLE_PROPELLER = 0; // [0:No, 1:Yes]
 PROPELLER_BLADES = 2; // [1:1:8]
 PROPELLER_DIRECTION = 1; // [1:Clockwise, -1:Counter Clockwise]
 
