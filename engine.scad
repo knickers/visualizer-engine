@@ -1,5 +1,5 @@
 // Number and angle of cylinders
-CONFIGURATION = 4; // [1:1 Cylinder, 2:2 Cylinders, V, 20:2 Cylinders, Flat, 3:3 Cylinders, 4:4 Cylinders]
+CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders, V, 20:2 Cylinders, Flat, 3:3 Cylinders, 4:4 Cylinders]
 
 // Distance between the stepper motor screws in millimeters
 MOTOR_SIZE = 31; // [20:0.1:50]
@@ -33,9 +33,9 @@ PIN_HEIGHT = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
 
 
-/********************************************************
- *  Arrange all the necessary parts on the build plate  *
- ********************************************************
+/***************************************
+ *  Layout all the parts for printing  *
+ ***************************************
  */
 
 translate([0,0,4])
@@ -45,7 +45,7 @@ translate([0,0,4])
 translate([0, CRANK/2, 0])
 	crank();
 
-translate([CYLINDERS%2==0 ? 0 : PISTON*2, CRANK+PISTON*2, 0])
+translate([0, MOTOR_SIZE+PISTON, 0])
 	spacer();
 
 y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
@@ -61,7 +61,7 @@ for (i = [0:CYLINDERS-1]) {
 }
 
 if (ENABLE_PROPELLER) {
-	translate([0, MOTOR_SIZE + PISTON, 0])
+	translate([MOTOR_SIZE*2.5, 0, 0])
 		propeller();
 }
 
