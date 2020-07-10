@@ -283,20 +283,18 @@ module block() {
 module propeller_blade() {
 	l = MOTOR_SIZE + 4; // length of propeller blade
 
-	translate([l/2, 0, 0]) {
-		if (ENABLE_PROPELLER == 1) {
-			scale([1, 0.3, 1])
-				cylinder(d = l, h = 2, $fn = $fn*2);
-		}
-		else if (ENABLE_PROPELLER == 2) {
-			linear_extrude(2)
-				hull() {
-					scale([1, 0.25, 1])
-						circle(d = l, $fn = $fn*2);
+	translate([l/2+l/10, 0, 0]) {
+		linear_extrude(2) {
+			hull() {
+				scale([1, 0.25, 1])
+					circle(d = l, $fn = $fn*2); // main body
 
-					translate([l/2-l/40, -l/15*PROPELLER_DIRECTION, 0])
-						circle(d = l/20);
-				}
+				translate([-l/2-l/10, 0, 0])
+					square(PROPELLER_BLADES>5 ? 1/PROPELLER_BLADES : 3, true);
+
+				translate([l/2-l/40, -l/15*PROPELLER_DIRECTION, 0])
+					circle(d = l/20); // wingtip
+			}
 		}
 	}
 }
@@ -304,21 +302,22 @@ module propeller_blade() {
 module propeller() {
 	p = (PIN * 2 + TOLHALF) / SQRT2; // pin size
 	a = 360 / PROPELLER_BLADES;
+	s = PIN*2+TOLERANCE*2; // pin slot extension size
 
 	difference() {
 		union() {
-			cylinder(d = 8, h = 2);
+			cylinder(d = 8, h = 2); // center hub
 
 			for (i = [0:PROPELLER_BLADES-1]) {
 				rotate(a*i, [0,0,1])
 					propeller_blade();
 			}
 
-			translate([CRANK, 0, 0])
-				cylinder(r = PIN+TOLERANCE*2, h = 4); // pin slot extension
+			translate([CRANK-s/2, -s/2, 0])
+				cube([s, s, 4]); // pin slot extension
 		}
 
 		translate([CRANK, 0, 2])
-			cube([p+0.1, p+0.1, 6], true);
+			cube([p+0.1, p+0.1, 6], true); // pin slot
 	}
 }
