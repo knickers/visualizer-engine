@@ -10,10 +10,11 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 // Tolerance between moving parts
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
-// Number of cylinders
-CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders V, 20:2 Cylinders Flat, 3:3 Cylinders, 4:4 Cylinders]
+/* [Propeller] */
 
-PROPELLER = 1;
+ENABLE_PROPELLER = 1; // [0:No, 1:Yes]
+PROPELLER_BLADES = 2; // [1:1:8]
+PROPELLER_DIRECTION = 1; // [1:Clockwise, -1:Counter Clockwise]
 
 $fn     = 24 + 0;                // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
@@ -59,7 +60,7 @@ for (i = [0:CYLINDERS-1]) {
 	}
 }
 
-if (PROPELLER) {
+if (ENABLE_PROPELLER) {
 	translate([0, MOTOR_SIZE + PISTON, 0])
 		propeller();
 }
@@ -100,7 +101,7 @@ module crank() {
 			translate([0, CRANK, 0])
 				cylinder(r = 4, h = 2);
 
-			if (PROPELLER) {
+			if (ENABLE_PROPELLER) {
 				p = PIN * 2 / SQRT2; // pin size
 				translate([0, 0, PIN_HEIGHT+3])
 					cube([p, p, 4], true);
@@ -279,24 +280,42 @@ module block() {
 	}
 }
 
+module propeller_blade() {
+	l = MOTOR_SIZE + 4; // length of propeller blade
+
+	translate([l/2, 0, 0]) {
+		if (ENABLE_PROPELLER == 1) {
+			scale([1, 0.3, 1])
+				cylinder(d = l, h = 2, $fn = $fn*2);
+		}
+		else if (ENABLE_PROPELLER == 2) {
+			linear_extrude(2)
+				hull() {
+					scale([1, 0.25, 1])
+						circle(d = l, $fn = $fn*2);
+
+					translate([l/2-l/40, -l/15*PROPELLER_DIRECTION, 0])
+						circle(d = l/20);
+				}
+		}
+	}
+}
+
 module propeller() {
-	l = MOTOR_SIZE + 4; // length of propeller wing
-	p = PIN * 2 / SQRT2; // pin size
+	p = (PIN * 2 + TOLHALF) / SQRT2; // pin size
+	a = 360 / PROPELLER_BLADES;
 
 	difference() {
 		union() {
 			cylinder(d = 8, h = 2);
 
-			translate([-l/2, 0, 0])
-				scale([1, 0.3, 1])
-					cylinder(d = l, h = 2, $fn = $fn*2); // left wing
-
-			translate([l/2, 0, 0])
-				scale([1, 0.3, 1])
-					cylinder(d = l, h = 2, $fn = $fn*2); // right wing
+			for (i = [0:PROPELLER_BLADES-1]) {
+				rotate(a*i, [0,0,1])
+					propeller_blade();
+			}
 
 			translate([CRANK, 0, 0])
-				cylinder(r = PIN+0.3, h = 4); // pin slot extension
+				cylinder(r = PIN+TOLERANCE*2, h = 4); // pin slot extension
 		}
 
 		translate([CRANK, 0, 2])

@@ -48,7 +48,7 @@ module combined(explode = 0) {
 			}
 	}
 
-	if (PROPELLER) {
+	if (ENABLE_PROPELLER) {
 		translate([0, 0, 7+PIN_HEIGHT+TOLHALF])
 			rotate([180, 0, a-90])
 				propeller();
