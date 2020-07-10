@@ -1,3 +1,6 @@
+// Number and angle of cylinders
+CONFIGURATION = 4; // [1:1 Cylinder, 2:2 Cylinders, V, 20:2 Cylinders, Flat, 3:3 Cylinders, 4:4 Cylinders]
+
 // Distance between the stepper motor screws in millimeters
 MOTOR_SIZE = 31; // [20:0.1:50]
 
