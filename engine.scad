@@ -10,6 +10,9 @@ MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 // Tolerance between moving parts
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
 
+// Parts layout
+VIEW = "Printing"; // [Printing, Combined, Exploded]
+
 /* [Propeller] */
 
 ENABLE_PROPELLER = 0; // [0:No, 1:Yes]
@@ -33,45 +36,115 @@ PIN_HEIGHT = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
 
 
+if (VIEW == "Printing") {
+	draw_for_printing();
+}
+else if (VIEW == "Combined") {
+	rotate([90, 0, 0])
+		draw_combined();
+}
+else if (VIEW == "Exploded") {
+	length = 3;
+	rotate([90, 0, 0])
+		translate([0, 0, -length*3])
+			draw_combined(length);
+}
 
-/***************************************
- *  Layout all the parts for printing  *
- ***************************************
- */
 
-translate([0,0,4])
-	rotate(180, [0,1,0])
-		block();
 
-translate([0, CRANK/2, 0])
-	crank();
+/*************************
+ *  Part layout modules  *
+ *************************/
 
-translate([0, MOTOR_SIZE+PISTON, 0])
-	spacer();
+module draw_for_printing() {
+	translate([0,0,4])
+		rotate(180, [0,1,0])
+			block();
 
-y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
-x = PISTON * 2;
-offset = (CYLINDERS-1) * PISTON;
+	translate([0, CRANK/2, 0])
+		crank();
 
-for (i = [0:CYLINDERS-1]) {
-	translate([-offset + x*i, -y-PISTON, 0]) {
-		piston();
-		translate([0, -PISTON-ROD, 0])
-			rod();
+	translate([0, MOTOR_SIZE+PISTON, 0])
+		spacer();
+
+	y = CYLINDERS == 4 ? MOTOR_SIZE : CRANK*3;
+	x = PISTON * 2;
+	offset = (CYLINDERS-1) * PISTON;
+
+	for (i = [0:CYLINDERS-1]) {
+		translate([-offset + x*i, -y-PISTON, 0]) {
+			piston();
+			translate([0, -PISTON-ROD, 0])
+				rod();
+		}
+	}
+
+	if (ENABLE_PROPELLER) {
+		translate([MOTOR_SIZE*2.5, 0, 0])
+			propeller();
 	}
 }
 
-if (ENABLE_PROPELLER) {
-	translate([MOTOR_SIZE*2.5, 0, 0])
-		propeller();
+// https://en.wikipedia.org/wiki/Piston_motion_equations#Crankshaft_geometry
+function piston_height(angle) =
+	CRANK * cos(angle) + sqrt(ROD*ROD - CRANK*CRANK * sin(angle)*sin(angle));
+
+module draw_combined(explode = 0) {
+	a = $t * 360 + 90;           // angle of the crankshaft
+	z = 4 + explode*6 + TOLHALF; // base z height of connecting rods
+	nudge = 45;
+	offset = (CYLINDERS-1) * (CYLINDER_ANGLE/2) - nudge;
+
+	color("LightGrey")
+	translate([0, 0, -explode])
+		rotate([0, 0, offset])
+			block();
+
+	color("SlateGrey")
+	translate([0, 0, explode])
+		rotate([0, 0, a])
+			spacer();
+
+	color("SlateGrey")
+	translate([0, 0, 2+explode*2])
+		rotate([0, 0, a])
+			crank();
+
+	for (i = [0:CYLINDERS-1]) {
+		A = -i*CYLINDER_ANGLE + nudge; // angle of this piston sleeve iteration
+		O = i % 2;                     // is this an odd iteration?
+
+		color("SlateGrey")
+		rotate([0, 0, -A])
+			translate([0, piston_height(abs(180-A-a)), 2+explode*4])
+				piston();
+
+		color("LightGrey")
+		translate([sin(a)*CRANK, -cos(a)*CRANK, i*(1+TOLHALF/2) + z])
+			rotate([0, 0, asin(sin(a+A)*CRANK/ROD)-A]) {
+				if (O || (CYLINDERS==3 && i==2)) {
+					rotate([0, 180, 0])
+						translate([0, 0, -1])
+							rod();
+				}
+				else {
+					rod();
+				}
+			}
+	}
+
+	if (ENABLE_PROPELLER) {
+		translate([0, 0, 7+PIN_HEIGHT+TOLHALF+explode*7])
+			rotate([180, 0, a-90])
+				propeller();
+	}
 }
 
 
 
 /**************************************************
  *  Modules for building each part of the engine  *
- **************************************************
- */
+ **************************************************/
 
 module pin() {
 	// Pin body
