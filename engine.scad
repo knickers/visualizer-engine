@@ -16,7 +16,8 @@ ENABLE_PROPELLER = 0; // [0:No, 1:Yes]
 PROPELLER_BLADES = 2; // [1:1:8]
 PROPELLER_DIRECTION = 1; // [1:Clockwise, -1:Counter Clockwise]
 
-$fn     = 24 + 0;                // Curve resolution
+$fa = $preview ? 15 : 0.1;
+$fs = $preview ? 1.25 : 0.6;    // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
 WALL    = 2 + 0;                 // Wall thickness
 MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
@@ -175,7 +176,7 @@ module piston() {
 
 			// curved cutout
 			translate([0, -CRANK*2+1, -1])
-				cylinder(r = CRANK+1, h = 4, $fn = PISTON/10*$fn);
+				cylinder(r = CRANK+1, h = 4);
 		}
 	}
 }
@@ -264,7 +265,7 @@ module block() {
 						sleeve_outline();
 
 				// block housing outer wall
-				cylinder(r = CRANK+5+WALL, h = 4, $fn = $fn*2);
+				cylinder(r = CRANK+5+WALL, h = 4);
 			}
 
 			for (i = [0:CYLINDERS-1])
@@ -273,7 +274,7 @@ module block() {
 
 			// block housing inner wall
 			translate([0, 0, -1])
-				cylinder(r = CRANK+5, h = 6, $fn = $fn*1.5);
+				cylinder(r = CRANK+5, h = 6);
 		}
 
 		mounts();
@@ -287,7 +288,7 @@ module propeller_blade() {
 		linear_extrude(2) {
 			hull() {
 				scale([1, 0.25, 1])
-					circle(d = l, $fn = $fn*2); // main body
+					circle(d = l); // main body
 
 				translate([-l/2-l/10, 0, 0])
 					square(PROPELLER_BLADES>5 ? 1/PROPELLER_BLADES : 3, true);
