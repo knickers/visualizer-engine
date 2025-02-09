@@ -2,11 +2,16 @@
 
 https://www.thingiverse.com/thing:4121683
 
-Kinetic visualizer pistons for a more discernibly dynamic extruder, inspired by extruder visualizers from other designers. Reciprocating Engine built to attach to your direct dive extruder motor. Can also attach to any motor which has screw holes in the corners.
+Kinetic visualizer pistons for a more discernibly dynamic extruder, inspired by extruder visualizers from other designers. This is a reciprocating engine built to attach to your direct dive extruder motor. It can also attach to any motor which is ferrous, or has screw holes in the corners.
 
-The engine block is held in place by circular tabs that press fit into the screw holes of standard NEMA 17 stepper motors. The fit should be tight so the assembly holds itself in place securely. If the mounting tabs don't fit in your motor, edit the tab size in Thingiverse Customizer.
+The crankshaft requires a neodymium magnet to hold itself to the stepper motor shaft, the default is **8 mm** diameter by **3 mm** tall.
 
-The crankshaft requires a neodymium magnet to hold itself to the stepper motor shaft, **8 mm** diameter by **3 mm** tall.
+The engine block is held on to the stepper motor with magnets. It can use the same size magnets as the crankshaft, 8mm X 3mm by default, or customize the size.
+
+*Edit: Feb 8th 2025*
+Switched to a magnet mounting system by default.
+
+The legacy tab option is held in place by circular tabs that press fit into the screw holes of standard NEMA 17 stepper motors. The fit should be tight so the assembly holds itself in place securely. If the mounting tabs don't fit in your motor, edit the tab size in Thingiverse Customizer.
 
 *Edit: June 26th 2020*
 Added different cylinder configurations and a configurable propeller. These are not provided as pre-rendered STLs, make them in customizer. Choose these different cylinder numbers and angles:
