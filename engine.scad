@@ -4,6 +4,14 @@ CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders (V), 20:2 Cylinders (Flat), 3
 // Distance between the stepper motor screws
 MOTOR_SIZE = 31; // [20:0.1:50]
 
+// Fasten the endgine to the motor
+MOUNTING_TYPE = "Magnet"; // ["Magnet", "Press-fit tab"]
+
+// Diameter inside the magnet mounting holes
+MOUNTING_MAGNET_DIAMETER = 8.05; // [4:0.01:10]
+
+MOUNTING_MAGNET_HEIGHT = 3; // [1:0.01:5]
+
 // Diameter inside the motor screw holes
 MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
 
@@ -20,18 +28,19 @@ PROPELLER_BLADES = 2; // [1:1:8]
 PROPELLER_DIRECTION = 1; // [1:Clockwise, -1:Counter Clockwise]
 
 $fa = $preview ? 15 : 0.1;
-$fs = $preview ? 1.25 : 0.6;    // Curve resolution
+$fs = $preview ? 1.25 : 0.6;     // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
 WALL    = 2 + 0;                 // Wall thickness
-MOUNT   = MOUNTING_TAB_SIZE / 2; // Motor mount tab radius
 SQRT2   = sqrt(2);               // Square root of 2
 TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
 CRANK   = MOTOR_SIZE / 6;        // Crankshaft length
-ROD     = MOTOR_SIZE / 2;        // Connecting rod length
+ROD     = MOTOR_SIZE / 1.9;      // Connecting rod length
 PISTON  = MOTOR_SIZE / 3.1;      // Piston size
-SLEEVE  = CRANK+ROD+PISTON/2+WALL+1;             // Cylinder length from center
+BLOCK   = 2+MOUNTING_MAGNET_HEIGHT;                  // Engine block thickness
+SLEEVE  = CRANK+ROD+PISTON/2+WALL+0.5;               // Cylinder length from center
 CYLINDERS = CONFIGURATION == 20 ? 2 : CONFIGURATION; // Number of cylinders
 CYLINDER_ANGLE = CONFIGURATION == 20 ? 180 : 90;     // Angle between cylinders
+MOUNT_TAB_R = MOUNTING_TAB_SIZE / 2;                 // Motor mount tab radius
 PIN_HEIGHT = CYLINDERS == 1 ? 4 : CYLINDERS+2;
 
 
@@ -57,8 +66,8 @@ else if (VIEW == "Exploded") {
  *************************/
 
 module draw_for_printing() {
-	translate([0,0,4])
-		rotate(180, [0,1,0])
+	translate([0,0,(MOUNTING_TYPE == "Magnet" ? 0 : 4)])
+		rotate((MOUNTING_TYPE == "Magnet" ? 0 : 180), [0,1,0])
 			block();
 
 	translate([0, CRANK/2, 0])
@@ -96,12 +105,12 @@ module draw_combined(explode = 0) {
 	offset = (CYLINDERS-1) * (CYLINDER_ANGLE/2) - nudge;
 
 	color("LightGrey")
-	translate([0, 0, -explode])
+	translate([0, 0, 4-BLOCK-explode])
 		rotate([0, 0, offset])
 			block();
 
 	color("SlateGrey")
-	translate([0, 0, explode])
+	translate([0, 0, 4-BLOCK+explode])
 		rotate([0, 0, a])
 			spacer();
 
@@ -184,7 +193,7 @@ module crank() {
 }
 
 module spacer() {
-	cylinder(r = 4, h = 2); // crankshaft spacer
+	cylinder(r = 4, h = BLOCK-2); // crankshaft spacer
 }
 
 // Connecting rod ring with a split for flexing over the pin head
@@ -254,32 +263,53 @@ module piston() {
 	}
 }
 
-module mount() {
-	d = MOUNT/2;
+module mount_magnet() {
+	ir = MOUNTING_MAGNET_DIAMETER / 2;
+	or = ir + 2;
+	w = or * 2;
+	difference() {
+		cylinder(r = or, h = MOUNTING_MAGNET_HEIGHT); // outside diameter
+		translate([0, 0, -1])
+			cylinder(r = ir, h = MOUNTING_MAGNET_HEIGHT+2); // inside diameter
+		translate([0, -or, MOUNTING_MAGNET_HEIGHT-1])
+			rotate(30, [1,0,0])
+				translate([-w/2, 0, 0])
+					cube([w, w, MOUNTING_MAGNET_HEIGHT]); // Diagonal ramp
+	}
+	if (ir+2 <= PISTON/2) {
+		for (i = [0:2])
+			rotate(90*i, [0,0,1])
+				translate([ir+1, -1, 0])
+					cube([PISTON/2-ir, 2, 2]);
+	}
+}
+
+module mount_tab() {
+	d = MOUNT_TAB_R/2;
 	w = PISTON + 2*WALL;
 
 	translate([0, 0, -1])
 		difference() {
-			cylinder(r = MOUNT, h = 1); // outside diameter
+			cylinder(r = MOUNT_TAB_R, h = 1); // outside diameter
 			translate([0, 0, -1])
-				cylinder(r = MOUNT-0.6, h = 3); // inside diameter
+				cylinder(r = MOUNT_TAB_R-0.6, h = 3); // inside diameter
 		}
 
 	// upper crossmember
-	translate([-w/2, MOUNT-2, 0])
+	translate([-w/2, MOUNT_TAB_R-2, 0])
 		cube([w, 2, 1]);
 
 	// lower crossmember
-	translate([-w/2, -MOUNT, 0])
+	translate([-w/2, -MOUNT_TAB_R, 0])
 		cube([w, 2, 1]);
 
 	// right support
-	translate([MOUNT-1, -MOUNT/2, 0])
-		cube([1, MOUNT, 0.5]);
+	translate([MOUNT_TAB_R-1, -MOUNT_TAB_R/2, 0])
+		cube([1, MOUNT_TAB_R, 0.5]);
 
 	// left support
-	translate([-MOUNT, -MOUNT/2, 0])
-		cube([1, MOUNT, 0.5]);
+	translate([-MOUNT_TAB_R, -MOUNT_TAB_R/2, 0])
+		cube([1, MOUNT_TAB_R, 0.5]);
 }
 
 module mounts() {
@@ -288,8 +318,14 @@ module mounts() {
 
 	for (i = [0:CYLINDERS-1])
 		rotate([0, 0, offset-i*CYLINDER_ANGLE])
-			translate([0, s, 0])
-				mount();
+			translate([0, s, 0]) {
+				if (MOUNTING_TYPE == "Magnet") {
+					mount_magnet();
+				}
+				else if (MOUNTING_TYPE == "Press-fit tab") {
+					mount_tab();
+				}
+	}
 }
 
 module sleeve_outline() {
@@ -298,7 +334,7 @@ module sleeve_outline() {
 	a = W / SQRT2;
 
 	if (WALL < 2)
-		translate([0, SLEEVE/2, 3])
+		translate([0, SLEEVE/2, BLOCK-1])
 			intersection() {
 				rotate([0, 45, 0])
 					cube([a, SLEEVE, a], true); // piston track bulge
@@ -307,16 +343,16 @@ module sleeve_outline() {
 			}
 
 	translate([-w/2, 0, 0])
-		cube([w, SLEEVE, 4]);
+		cube([w, SLEEVE, BLOCK]);
 }
 
 module sleeve_cutout() {
 	a = (PISTON+2) / SQRT2;
 
 	translate([-PISTON/2, -WALL, -1])
-		cube([PISTON, SLEEVE, 6]);
+		cube([PISTON, SLEEVE, BLOCK+2]);
 
-	translate([0, SLEEVE/2 - WALL, 3])
+	translate([0, SLEEVE/2 - WALL, BLOCK-1])
 		rotate([0, 45, 0])
 			cube([a, SLEEVE, a], true); // piston track grooves
 }
@@ -338,7 +374,7 @@ module block() {
 						sleeve_outline();
 
 				// block housing outer wall
-				cylinder(r = CRANK+5+WALL, h = 4);
+				cylinder(r = CRANK+5+WALL, h = BLOCK);
 			}
 
 			for (i = [0:CYLINDERS-1])
@@ -347,7 +383,7 @@ module block() {
 
 			// block housing inner wall
 			translate([0, 0, -1])
-				cylinder(r = CRANK+5, h = 6);
+				cylinder(r = CRANK+5, h = BLOCK+2);
 		}
 
 		mounts();
