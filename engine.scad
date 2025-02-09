@@ -4,16 +4,11 @@ CONFIGURATION = 2; // [1:1 Cylinder, 2:2 Cylinders (V), 20:2 Cylinders (Flat), 3
 // Distance between the stepper motor screws
 MOTOR_SIZE = 31; // [20:0.1:50]
 
-// Fasten the endgine to the motor
-MOUNTING_TYPE = "Magnet"; // ["Magnet", "Press-fit tab"]
-
 // Diameter inside the magnet mounting holes
-MOUNTING_MAGNET_DIAMETER = 8.05; // [4:0.01:10]
+MAGNET_DIAMETER = 8.05; // [4:0.01:10]
 
-MOUNTING_MAGNET_HEIGHT = 3; // [1:0.01:5]
-
-// Diameter inside the motor screw holes
-MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
+// Magnet thickness
+MAGNET_HEIGHT = 3; // [1:0.01:5]
 
 // Tolerance between moving parts
 TOLERANCE = 0.3; // [0.1:0.05:0.5]
@@ -27,6 +22,14 @@ ENABLE_PROPELLER = 0; // [0:No, 1:Yes]
 PROPELLER_BLADES = 2; // [1:1:8]
 PROPELLER_DIRECTION = 1; // [1:Clockwise, -1:Counter Clockwise]
 
+/* [Mounting Tabs] */
+
+// How to fasten the visualizer engine to the stepper motor
+MOUNTING_TYPE = "Magnet"; // ["Magnet", "Press-fit tab"]
+
+// Diameter inside the motor screw holes
+MOUNTING_TAB_SIZE = 6.15; // [4.5:0.01:7.5]
+
 $fa = $preview ? 15 : 0.1;
 $fs = $preview ? 1.25 : 0.6;     // Curve resolution
 PIN     = 2 + 0;                 // Pin radius
@@ -36,7 +39,7 @@ TOLHALF = TOLERANCE / 2;         // Half of the part tolerance
 CRANK   = MOTOR_SIZE / 6;        // Crankshaft length
 ROD     = MOTOR_SIZE / 1.9;      // Connecting rod length
 PISTON  = MOTOR_SIZE / 3.1;      // Piston size
-BLOCK   = 2+MOUNTING_MAGNET_HEIGHT;                  // Engine block thickness
+BLOCK   = 2+MAGNET_HEIGHT;       // Engine block thickness
 SLEEVE  = CRANK+ROD+PISTON/2+WALL+0.5;               // Cylinder length from center
 CYLINDERS = CONFIGURATION == 20 ? 2 : CONFIGURATION; // Number of cylinders
 CYLINDER_ANGLE = CONFIGURATION == 20 ? 180 : 90;     // Angle between cylinders
@@ -264,17 +267,17 @@ module piston() {
 }
 
 module mount_magnet() {
-	ir = MOUNTING_MAGNET_DIAMETER / 2;
+	ir = MAGNET_DIAMETER / 2;
 	or = ir + 2;
 	w = or * 2;
 	difference() {
-		cylinder(r = or, h = MOUNTING_MAGNET_HEIGHT); // outside diameter
+		cylinder(r = or, h = MAGNET_HEIGHT); // outside diameter
 		translate([0, 0, -1])
-			cylinder(r = ir, h = MOUNTING_MAGNET_HEIGHT+2); // inside diameter
-		translate([0, -or, MOUNTING_MAGNET_HEIGHT-1])
+			cylinder(r = ir, h = MAGNET_HEIGHT+2); // inside diameter
+		translate([0, -or, MAGNET_HEIGHT-1])
 			rotate(30, [1,0,0])
 				translate([-w/2, 0, 0])
-					cube([w, w, MOUNTING_MAGNET_HEIGHT]); // Diagonal ramp
+					cube([w, w, MAGNET_HEIGHT]); // Diagonal ramp
 	}
 	if (ir+2 <= PISTON/2) {
 		for (i = [0:2])
